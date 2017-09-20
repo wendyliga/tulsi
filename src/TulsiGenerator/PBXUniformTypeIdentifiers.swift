@@ -230,6 +230,7 @@ let DirExtensionToUTI = [
   "xcmappingmodel": "wrapper.xcmappingmodel",
   "xctest": "wrapper.cfbundle",
   "xpc": "wrapper.xpc-service",
+  "scnassets": "wrapper.scnassets"
 ]
 
 // Helper methods to extract filename-like substrings from strings.
