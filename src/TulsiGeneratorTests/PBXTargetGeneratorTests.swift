@@ -18,7 +18,7 @@ import XCTest
 // Note: Rather than test the serializer's output, we make use of the knowledge that
 // buildSerializerWithRuleEntries modifies a project directly.
 class PBXTargetGeneratorTests: XCTestCase {
-  let bazelURL = URL(fileURLWithPath: "__BAZEL_BINARY_")
+  let bazelURL = URL(string: "__BAZEL_BINARY_")!
   let workspaceRootURL = URL(fileURLWithPath: "/workspaceRootURL", isDirectory: true)
   let stubPlistPaths = StubInfoPlistPaths(resourcesDirectory: "${PROJECT_FILE_PATH}/.tulsi/Resources",
                                           defaultStub: "TestInfo.plist",
@@ -100,7 +100,7 @@ class PBXTargetGeneratorTests: XCTestCase {
 
 
 class PBXTargetGeneratorTestsWithFiles: XCTestCase {
-  let bazelURL = URL(fileURLWithPath: "__BAZEL_BINARY_")
+  let bazelURL = URL(string: "__BAZEL_BINARY_")!
   let workspaceRootURL = URL(fileURLWithPath: "/workspaceRootURL", isDirectory: true)
   let sdkRoot = "sdkRoot"
   let stubPlistPaths = StubInfoPlistPaths(resourcesDirectory:"${PROJECT_ROOT}/asd",
@@ -217,7 +217,7 @@ class PBXTargetGeneratorTestsWithFiles: XCTestCase {
         "GCC_WARN_UNINITIALIZED_AUTOS": "YES",
         "GCC_WARN_UNUSED_FUNCTION": "YES",
         "GCC_WARN_UNUSED_VARIABLE": "YES",
-        "HEADER_SEARCH_PATHS": "$(TULSI_BWRS) $(TULSI_WR)/bazel-bin $(TULSI_WR)/bazel-genfiles "
+        "HEADER_SEARCH_PATHS": "$(TULSI_BWRS) $(TULSI_WR)/bazel-bin $(TULSI_WR)/bazel-genfiles/** "
                                + "$(TULSI_BWRS)/tulsi-includes/x/x",
         "ONLY_ACTIVE_ARCH": "YES",
         "PYTHONIOENCODING": "utf8",
@@ -267,7 +267,7 @@ class PBXTargetGeneratorTestsWithFiles: XCTestCase {
         "GCC_WARN_UNINITIALIZED_AUTOS": "YES",
         "GCC_WARN_UNUSED_FUNCTION": "YES",
         "GCC_WARN_UNUSED_VARIABLE": "YES",
-        "HEADER_SEARCH_PATHS": "$(TULSI_BWRS) $(TULSI_WR)/bazel-bin $(TULSI_WR)/bazel-genfiles "
+        "HEADER_SEARCH_PATHS": "$(TULSI_BWRS) $(TULSI_WR)/bazel-bin $(TULSI_WR)/bazel-genfiles/** "
                                + "$(TULSI_BWRS)/tulsi-includes/x/x",
         "SDKROOT": projectSDKROOT,
         "ONLY_ACTIVE_ARCH": "YES",
