@@ -59,8 +59,8 @@ final class BazelAspectInfoExtractor: QueuedLogging {
 
     bundle = Bundle(for: type(of: self))
 
-    let workspaceFilePath = bundle.path(forResource: "WORKSPACE", ofType: "")! as NSString
-    aspectWorkspacePath = workspaceFilePath.deletingLastPathComponent
+    let workspaceFilePath = workspaceRootURL.appendingPathComponent("tulsi-aspects").appendingPathComponent("WORKSPACE")
+    aspectWorkspacePath = workspaceFilePath.deletingLastPathComponent().path
   }
 
   /// Builds a map of RuleEntry instances keyed by their labels with information extracted from the

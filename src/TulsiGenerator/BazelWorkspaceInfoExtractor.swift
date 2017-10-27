@@ -80,8 +80,8 @@ final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProtocol {
     let bepSupportEnabled = bepOption.commonValueAsBool ?? true
 
     // TODO(abaire): Support per-target and per-config options during aspect lookups.
-    let startupOptions = splitOptionString(startupOptions.commonValue)
-    let buildOptions = splitOptionString(buildOptions.commonValue)
+    let startupOptions = splitOptionString(startupOptions.commonValue).filter{ $0 != "$(inherited)" }
+    let buildOptions = splitOptionString(buildOptions.commonValue).filter{ $0 != "$(inherited)" }
 
     do {
       let ruleEntryMap =

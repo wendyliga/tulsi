@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0954650E1FA3E88800BAB87F /* TulsiRuleEntryMapExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0954650D1FA3E88800BAB87F /* TulsiRuleEntryMapExtractor.swift */; };
 		2D7A8EB51F67220400392DA3 /* macOSXCTRunner.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 2D7A8EB41F6720EB00392DA3 /* macOSXCTRunner.entitlements */; };
 		2D9DB34A1E5DECA40021EAF4 /* iOSXCTRunner.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 2D9DB3491E5DEC680021EAF4 /* iOSXCTRunner.entitlements */; };
 		2DD7C6C21F6886D400163B92 /* TulsiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D387BB71C761B8800544AE0 /* TulsiError.swift */; };
@@ -210,6 +211,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0954650D1FA3E88800BAB87F /* TulsiRuleEntryMapExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TulsiRuleEntryMapExtractor.swift; sourceTree = "<group>"; };
 		2D7A8EB41F6720EB00392DA3 /* macOSXCTRunner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOSXCTRunner.entitlements; sourceTree = "<group>"; };
 		2D9DB3491E5DEC680021EAF4 /* iOSXCTRunner.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSXCTRunner.entitlements; sourceTree = "<group>"; };
 		2DD7C6C31F6887DB00163B92 /* DeploymentTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeploymentTarget.swift; sourceTree = "<group>"; };
@@ -438,6 +440,7 @@
 				3DEC9EDC1CF3421600769251 /* TulsiProcessRunner.swift */,
 				3DA65B271C67E9720055448E /* TulsiXcodeProjectGenerator.swift */,
 				546AE0AE1F75BE1D00FE9562 /* StringExtensions.swift */,
+				0954650D1FA3E88800BAB87F /* TulsiRuleEntryMapExtractor.swift */,
 			);
 			path = TulsiGenerator;
 			sourceTree = "<group>";
@@ -938,6 +941,7 @@
 				3DBCB5201CCA94E7000801A5 /* BazelErrorExtractor.swift in Sources */,
 				3D029B581C6421B400779E8E /* ProcessRunner.swift in Sources */,
 				5429EA8B1F38C4DB00A78405 /* BazelPBXReferencePatcher.swift in Sources */,
+				0954650E1FA3E88800BAB87F /* TulsiRuleEntryMapExtractor.swift in Sources */,
 				3D99268F1C29F1100094E098 /* PBXProjSerializer.swift in Sources */,
 				2DD7C6C41F6887DB00163B92 /* DeploymentTarget.swift in Sources */,
 				3D99268C1C29F1100094E098 /* PBXUniformTypeIdentifiers.swift in Sources */,
