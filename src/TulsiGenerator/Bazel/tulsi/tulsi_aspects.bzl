@@ -569,6 +569,10 @@ def _tulsi_sources_aspect(target, ctx):
   attributes = _dict_omitting_none(
       binary=_get_label_attr(binary_rule, 'label'),
       copts=_get_opt_attr(rule_attr, 'copts'),
+      sdk_frameworks=_get_opt_attr(rule_attr, 'sdk_frameworks'),
+      sdk_dylibs=_get_opt_attr(rule_attr, 'sdk_dylibs'),
+      weak_sdk_frameworks=_get_opt_attr(rule_attr, 'weak_sdk_frameworks'),
+      is_dynamic=_get_opt_attr(rule_attr, 'is_dynamic'),
       datamodels=_collect_xcdatamodeld_files(rule_attr, 'datamodels'),
       supporting_files=supporting_files,
       xctest=_get_opt_attr(rule_attr, 'xctest'),
