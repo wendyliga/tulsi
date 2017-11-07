@@ -195,6 +195,7 @@ public final class RuleEntry: RuleInfo {
     case sdk_dylibs
     case weak_sdk_frameworks
     case is_dynamic
+    case archives
   }
 
   /// Bazel attributes for this rule (e.g., "binary": <some label> on an ios_application).
