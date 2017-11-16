@@ -196,6 +196,8 @@ public final class RuleEntry: RuleInfo {
     case weak_sdk_frameworks
     case is_dynamic
     case archives
+    // Added separately by Pinterest team
+    case structured_resources
   }
 
   /// Bazel attributes for this rule (e.g., "binary": <some label> on an ios_application).

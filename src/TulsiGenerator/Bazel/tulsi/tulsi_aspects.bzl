@@ -49,7 +49,6 @@ _SUPPORTING_FILE_ATTRIBUTES = [
     'infoplists',
     'resources',
     'strings',
-    'structured_resources',
     'storyboards',
     'xibs',
 ]
@@ -586,6 +585,7 @@ def _tulsi_sources_aspect(target, ctx):
       weak_sdk_frameworks=_get_opt_attr(rule_attr, 'weak_sdk_frameworks'),
       is_dynamic=_get_opt_attr(rule_attr, 'is_dynamic'),
       datamodels=_collect_xcdatamodeld_files(rule_attr, 'datamodels'),
+      structured_resources=_collect_files(rule_attr, 'structured_resources'),
       supporting_files=supporting_files,
       xctest=_get_opt_attr(rule_attr, 'xctest'),
       xctest_app=_get_label_attr(rule_attr, 'xctest_app.label'),
