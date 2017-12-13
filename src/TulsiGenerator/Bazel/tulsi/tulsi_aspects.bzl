@@ -51,6 +51,7 @@ _SUPPORTING_FILE_ATTRIBUTES = [
     'strings',
     'storyboards',
     'xibs',
+    'provisioning_profile'
 ]
 
 # List of rules with implicit <label>.ipa IPA outputs.
@@ -582,6 +583,8 @@ def _tulsi_sources_aspect(target, ctx):
       copts=_get_opt_attr(rule_attr, 'copts'),
       sdk_frameworks=_get_opt_attr(rule_attr, 'sdk_frameworks'),
       sdk_dylibs=_get_opt_attr(rule_attr, 'sdk_dylibs'),
+      entitlements=_get_label_attr(rule_attr, 'entitlements.label'),
+      provisioning_profile=_get_label_attr(rule_attr, 'provisioning_profile.label'),
       weak_sdk_frameworks=_get_opt_attr(rule_attr, 'weak_sdk_frameworks'),
       is_dynamic=_get_opt_attr(rule_attr, 'is_dynamic'),
       datamodels=_collect_xcdatamodeld_files(rule_attr, 'datamodels'),
