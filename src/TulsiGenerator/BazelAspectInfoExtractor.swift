@@ -35,7 +35,6 @@ final class BazelAspectInfoExtractor: QueuedLogging {
   /// The location of the Bazel workspace to be examined.
   let workspaceRootURL: URL
 
-  private let bundle: Bundle
   /// Absolute path to the workspace containing the Tulsi aspect bzl file.
   private let aspectWorkspacePath: String
   private let localizedMessageLogger: LocalizedMessageLogger
@@ -57,9 +56,20 @@ final class BazelAspectInfoExtractor: QueuedLogging {
     self.buildEventsFilePath =
         (NSTemporaryDirectory() as NSString).appendingPathComponent(buildEventsFileName)
 
-    bundle = Bundle(for: type(of: self))
+    #if Xcode
+        // Xcode Swift PM integration support.
+        // There is no way to correctly bundle framework resources in this scenario.
+        let components = #file .split(separator: "/")
+        let srcRoot = "/" + components [0 ... components.count - 7].joined(separator: "/")
+        let tulsiAspectPath = srcRoot + "/tulsi-aspects"
+    #else
+        // Load `tulsi-aspects` from the bundle
+        let bundle = Bundle(for: type(of: self))
+        let tulsiAspectPath = bundle.path(forResource: "tulsi-aspects", ofType: "")!
+    #endif
 
-    let workspaceFilePath = workspaceRootURL.appendingPathComponent("tulsi-aspects").appendingPathComponent("WORKSPACE")
+    let tulsiAspectURL = URL(fileURLWithPath: tulsiAspectPath)
+    let workspaceFilePath = tulsiAspectURL.appendingPathComponent("WORKSPACE")
     aspectWorkspacePath = workspaceFilePath.deletingLastPathComponent().path
   }
 
