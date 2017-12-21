@@ -13,10 +13,7 @@ enum BundleLoadError: Error {
 }
 public enum TulsiRuleEntryMapExtractor {
     public static func extract(config: TulsiGeneratorConfig, workspace: URL) throws -> RuleEntryMap {
-        guard let bundle = Bundle(url: workspace.appendingPathComponent("tulsi-aspects")) else {
-            throw BundleLoadError.cannotFindTulsiAspectsDirectory(description: "Did you run the `make` target that exports the Tulsi framework bundle?")
-        }
-        
+        let bundle = Bundle.main
         let extractor = BazelWorkspaceInfoExtractor(
             bazelURL: config.bazelURL,
             workspaceRootURL: workspace,
