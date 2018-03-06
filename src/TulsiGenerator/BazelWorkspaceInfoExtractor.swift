@@ -94,17 +94,6 @@ final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProtocol {
       throw BazelWorkspaceInfoExtractorError.aspectExtractorFailed("Bazel aspects could not be built.")
     }
 
-    // Because certain label types are expanded by Bazel prior to aspect invocation (most notably
-    // test_suite rules), an additional pass is attempted if any of the requested labels are still
-    // missing after the aspect run.
-    let remainingMissingLabels = missingLabels.filter() {
-      return isLabelMissing($0) && !attemptedTestSuiteLabels.contains($0)
-    }
-    if !remainingMissingLabels.isEmpty {
-      extractTestSuiteRules(remainingMissingLabels)
-      attemptedTestSuiteLabels.forEach() { attemptedTestSuiteLabels.insert($0) }
-    }
-
     return ruleEntryCache
   }
 

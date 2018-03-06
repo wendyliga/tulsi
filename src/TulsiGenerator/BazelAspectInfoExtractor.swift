@@ -16,7 +16,7 @@ import Foundation
 
 
 // Provides methods utilizing Bazel aspects to extract information from a workspace.
-final class BazelAspectInfoExtractor: QueuedLogging {
+final public class BazelAspectInfoExtractor: QueuedLogging {
   enum ExtractorError: Error {
     /// Failed to build aspects.
     case buildFailed
@@ -45,7 +45,7 @@ final class BazelAspectInfoExtractor: QueuedLogging {
 
   private typealias CompletionHandler = (Process, [String]?, String) -> Void
 
-  init(bazelURL: URL,
+  public init(bazelURL: URL,
        workspaceRootURL: URL,
        localizedMessageLogger: LocalizedMessageLogger) {
     self.bazelURL = bazelURL
