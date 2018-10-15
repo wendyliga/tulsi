@@ -818,7 +818,7 @@ def _tulsi_sources_aspect(target, ctx):
         swift_transitive_modules = _depset_to_file_metadata_list(provider.swift_modules)
         objc_module_maps = _depset_to_file_metadata_list(provider.module_maps)
         test_deps = provider.deps.to_list()
-        module_name = provider.module_name
+        module_name = _get_opt_attr(provider, "module_name")
     else:
         swift_transitive_modules = swift_transitive_modules.to_list()
         objc_module_maps = objc_module_maps.to_list()
