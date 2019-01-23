@@ -1637,11 +1637,11 @@ done
       shellScript = templateString.replacingOccurrences(of: "__CHANGE_DIRECTORY_ACTION__",
                                                         with: changeDirectoryAction)
                                   .replacingOccurrences(of: "__BAZEL_COMMAND__",
-                                                        with: "\(commandLine) --install_generated_artifacts")
+                                                        with: "\(commandLine)")
     } else {
       shellScript = "set -e\n" +
         "\(changeDirectoryAction)\n" +
-        "exec \(commandLine) --install_generated_artifacts"
+        "exec \(commandLine)"
     }
 
     // Using the Info.plist as an input forces Xcode to run this after processing the Info.plist,
