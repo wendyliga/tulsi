@@ -29,6 +29,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import textwrap
 import threading
 import time
@@ -488,6 +489,10 @@ class BazelBuildBridge(object):
                                                        '.tulsi',
                                                        'Resources',
                                                        entitlements_filename)
+      # XCUITest runners on devices need provisioning profiles, but this dependency is not part of the
+      # ios_ui_test target in rules_apple at the moment. For now, we can pass this through this
+      # environment variable.
+      self.test_runner_provisioning_profile = os.environ.get('TULSI_TEST_RUNNER_PROVISIONING_PROFILE')
 
     self.bazel_executable = None
 
@@ -597,6 +602,30 @@ class BazelBuildBridge(object):
           _PrintXcodeError('Remapping dSYMs process returned %i, please '
                            'report a Tulsi bug and attach a full Xcode '
                            'build log.' % exit_code)
+          return exit_code
+        # We don't want to run the DSYM Patcher.
+        # Clang is setup to generate one relative to the workspace.
+        if False:
+          timer = Timer('Patching DSYM source file paths',
+                        'patching_dsym').Start()
+          exit_code = self._PatchdSYMPaths(dsym_path)
+          timer.End()
+          if exit_code:
+            return exit_code
+
+      # Starting with Xcode 7.3, XCTests inject several supporting frameworks
+      # into the test host that need to be signed with the same identity as
+      # the host itself.
+      if (self.is_test and self.xcode_version_minor >= 730 and
+          self.codesigning_allowed):
+        # If we're codesigning we also need to make sure we use the correct
+        # provisioning profile.
+        if not self.is_simulator and self.test_runner_provisioning_profile:
+          exit_code = self._ProvisionTestRunner()
+          if exit_code:
+            return exit_code
+        exit_code = self._ResignTestArtifacts()
+        if exit_code:
           return exit_code
 
     # Starting with Xcode 7.3, XCTests inject several supporting frameworks
@@ -1275,6 +1304,21 @@ class BazelBuildBridge(object):
       return 800 + returncode
     return 0
 
+  def _ProvisionTestRunner(self):
+    """Add/overwrite provisioning profile inside XCUITest test runner"""
+    provisioning_profile_destination = self.codesigning_folder_path + "/embedded.mobileprovision"
+    if os.path.isfile(provisioning_profile_destination):
+      try:
+        os.remove(provisioning_profile_destination)
+      except OSError as e:
+        _PrintXcodeError('Failed to remove stale output file ""%s". '
+                         '%s' % (provisioning_profile_destination, e))
+        return 600
+
+    return self._CopyFile(os.path.basename(self.test_runner_provisioning_profile),
+                          self.test_runner_provisioning_profile,
+                          provisioning_profile_destination)
+
   def _ResignTestArtifacts(self):
     """Resign test related artifacts that Xcode injected into the outputs."""
     if not self.is_test:
@@ -1320,7 +1364,14 @@ class BazelBuildBridge(object):
     if not self.codesigning_allowed:
       return 0
 
-    for framework in XCODE_INJECTED_FRAMEWORKS:
+    xcode_injected_frameworks = ['XCTest', 'IDEBundleInjection']
+
+    # On Xcode 9, there is a new test framework injected, XCTAutomationSupport.framework
+    # so we need to re-sign that as well.
+    if int(os.environ['XCODE_VERSION_MAJOR']) >= 900:
+      xcode_injected_frameworks.append('XCTAutomationSupport')
+
+    for framework in xcode_injected_frameworks:
       framework_path = os.path.join(
           bundle, 'Frameworks', framework)
       if os.path.isdir(framework_path) or os.path.isfile(framework_path):
@@ -1358,9 +1409,52 @@ class BazelBuildBridge(object):
       contents = contents.replace(
           '$(BundleIdentifier)',
           self._ExtractSigningBundleIdentifier(self.artifact_output_path))
+
+      # According to https://developer.apple.com/library/content/technotes/tn2415/_index.html#//apple_ref/doc/uid/DTS40016427-CH1-ENTITLEMENTSLIST
+      # it is likely (but isn't always the case) that the AppIdentifier is equivalent to the TeamIdentifier
+      # If a provisioning_profile is provided we can extract it from here, otherwise we'll assume the
+      # TeamIdentifier is the AppIdentifier in this case.
+      if self.test_runner_provisioning_profile:
+          contents = contents.replace(
+              '$(AppIdentifier)',
+              self._ExtractApplicationIdentifier(self.test_runner_provisioning_profile))
+      else:
+          contents = contents.replace(
+              '$(AppIdentifier)',
+              self._ExtractSigningTeamIdentifier(self.content_folder_path))
+
       with open(output_file, 'w') as output:
         output.write(contents)
     return output_file
+
+  _app_identifier_for_profile = {}
+  def _ExtractApplicationIdentifier(self, provisioning_profile):
+    """Returns the app identity needed to sign apps using the given provisioning_profile"""
+    cached = self._app_identifier_for_profile.get(provisioning_profile)
+    if cached:
+      return cached
+
+    timer = Timer('\tExtracting app identity for ' + provisioning_profile,
+                  'extracting_appidentity').Start()
+    output = subprocess.check_output(['xcrun',
+                                      'security',
+                                      'cms',
+                                      '-D',
+                                      '-i',
+                                      provisioning_profile])
+    with tempfile.NamedTemporaryFile() as temp:
+      temp.write(output)
+      temp.flush()
+      plist_buddy_output = subprocess.check_output(['/usr/libexec/PlistBuddy',
+                                                       '-c',
+                                                       'Print :Entitlements:application-identifier',
+                                                       temp.name])
+    timer.End()
+
+    app_identifier = plist_buddy_output.split('.')[0]
+
+    self._app_identifier_for_profile[provisioning_profile] = app_identifier
+    return app_identifier
 
   def _ExtractSigningIdentity(self, signed_bundle):
     """Returns the identity used to sign the given bundle path."""
