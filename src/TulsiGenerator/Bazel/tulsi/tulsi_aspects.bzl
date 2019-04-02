@@ -86,7 +86,6 @@ _SUPPORTING_FILE_ATTRIBUTES = [
     "provisioning_profile",
     "resources",
     "strings",
-    "structured_resources",
     "storyboards",
     "xibs",
 ]
