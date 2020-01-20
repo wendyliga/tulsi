@@ -18,5 +18,8 @@ let package = Package(
             dependencies: [],
             path: "src/TulsiGenerator")
     ],
+    platforms: [
+       .macOS(.v10_13),
+    ],
     swiftLanguageVersions: [4]
 )
