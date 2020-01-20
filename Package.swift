@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "Tulsi",
+    platforms: [
+       .macOS(.v10_13),
+    ],
     products: [
         .library(
             name: "TulsiGenerator",
@@ -17,9 +20,6 @@ let package = Package(
             name: "TulsiGenerator",
             dependencies: [],
             path: "src/TulsiGenerator")
-    ],
-    platforms: [
-       .macOS(.v10_13),
     ],
     swiftLanguageVersions: [4]
 )
