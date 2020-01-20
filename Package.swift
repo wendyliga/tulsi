@@ -21,5 +21,5 @@ let package = Package(
             dependencies: [],
             path: "src/TulsiGenerator")
     ],
-    swiftLanguageVersions: [4]
+    swiftLanguageVersions: [.v4]
 )
