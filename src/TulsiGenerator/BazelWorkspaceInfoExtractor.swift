@@ -59,7 +59,7 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
       let aspectPath = try! applicationSupport.copyTulsiAspectFiles(tulsiVersion: tulsiVersion)
       universalFlags = BazelFlags(
         // TODO(tulsi-team): See if we can avoid using --override_repository.
-        build: ["--override_repository=tulsi=\(aspectPath)"]
+        build: ["--override_repository=tulsi=\(aspectPath)", "--config=debug"]
       )
     } else {  // Running inside a test, just refer to the files directly from TulsiGenerator.
       let bundle = Bundle(for: type(of: self))
