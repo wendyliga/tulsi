@@ -11,7 +11,7 @@ let package = Package(
     products: [
         .library(
             name: "TulsiGenerator",
-            type: .static,
+            type: .dynamic,
             targets: ["TulsiGenerator"]),
     ],
     dependencies: [],
