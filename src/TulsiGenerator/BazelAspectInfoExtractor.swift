@@ -289,6 +289,8 @@ final public class BazelAspectInfoExtractor: QueuedLogging {
 
       let ruleLabel = try getRequiredField("label")
       let ruleType = try getRequiredField("type")
+      let productModuleName = dict["product_module_name"] as? String
+
       let attributes = dict["attr"] as? [String: AnyObject] ?? [:]
 
       func MakeBazelFileInfos(_ attributeName: String) -> [BazelFileInfo] {
@@ -422,7 +424,9 @@ final public class BazelAspectInfoExtractor: QueuedLogging {
                                 objCModuleMaps: objCModuleMaps,
                                 moduleName: moduleName,
                                 extensionType: extensionType,
-                                xcodeVersion: xcodeVersion)
+                                xcodeVersion: xcodeVersion,
+                                productModuleName: productModuleName
+                                )
       progressNotifier?.incrementValue()
       return ruleEntry
     }

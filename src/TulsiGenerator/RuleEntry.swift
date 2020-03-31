@@ -232,6 +232,9 @@ public final class RuleEntry: RuleInfo {
 
   /// The deployment platform target for this target.
   public let deploymentTarget: DeploymentTarget?
+    
+  /// Resource Product Module Name
+  public let productModuleName: String?
 
   /// Set of labels that this rule depends on but does not require.
   /// TODO(b/71904309): Remove this once test_suite fetching via Aspect is stable.
@@ -357,7 +360,9 @@ public final class RuleEntry: RuleInfo {
        objCModuleMaps: [BazelFileInfo] = [],
        moduleName: String? = nil,
        extensionType: String? = nil,
-       xcodeVersion: String? = nil) {
+       xcodeVersion: String? = nil,
+       productModuleName: String? = nil
+    ) {
 
     var checkedAttributes = [Attribute: AnyObject]()
     for (key, value) in attributes {
@@ -444,7 +449,8 @@ public final class RuleEntry: RuleInfo {
     if let hostLabelString = self.attributes[.test_host] as? String {
       linkedTargetLabels.insert(BuildLabel(hostLabelString))
     }
-
+    
+    self.productModuleName = productModuleName
     super.init(label: label, type: type, linkedTargetLabels: linkedTargetLabels)
   }
 
@@ -476,7 +482,9 @@ public final class RuleEntry: RuleInfo {
                    objCModuleMaps: [BazelFileInfo] = [],
                    moduleName: String? = nil,
                    extensionType: String? = nil,
-                   xcodeVersion: String? = nil) {
+                   xcodeVersion: String? = nil,
+                   productModuleName: String? = nil
+                ) {
     self.init(label: BuildLabel(label),
               type: type,
               attributes: attributes,
@@ -505,7 +513,9 @@ public final class RuleEntry: RuleInfo {
               objCModuleMaps: objCModuleMaps,
               moduleName: moduleName,
               extensionType: extensionType,
-              xcodeVersion: xcodeVersion)
+              xcodeVersion: xcodeVersion,
+              productModuleName: productModuleName
+            )
   }
 
   // MARK: Private methods
