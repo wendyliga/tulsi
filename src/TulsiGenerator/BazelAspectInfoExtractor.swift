@@ -47,7 +47,8 @@ final public class BazelAspectInfoExtractor: QueuedLogging {
        workspaceRootURL: URL,
        executionRootURL: URL,
        bazelSettingsProvider: BazelSettingsProviderProtocol,
-       localizedMessageLogger: LocalizedMessageLogger) {
+       localizedMessageLogger: LocalizedMessageLogger,
+       bundle: Bundle) {
     self.bazelURL = bazelURL
     self.workspaceRootURL = workspaceRootURL
     self.executionRootURL = executionRootURL
@@ -58,7 +59,6 @@ final public class BazelAspectInfoExtractor: QueuedLogging {
     self.buildEventsFilePath =
         (NSTemporaryDirectory() as NSString).appendingPathComponent(buildEventsFileName)
 
-    let bundle = Bundle(for: type(of: self))
     let workspaceFilePath = bundle.path(forResource: "WORKSPACE", ofType: "")! as NSString
     aspectWorkspacePath = workspaceFilePath.deletingLastPathComponent
   }

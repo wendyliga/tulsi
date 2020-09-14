@@ -30,14 +30,16 @@ public class BazelWorkspacePathInfoFetcher {
 
   private let localizedMessageLogger: LocalizedMessageLogger
   private let semaphore: DispatchSemaphore
+  private let bundle: Bundle
   private var fetchCompleted = false
 
   public init(bazelURL: URL, workspaceRootURL: URL, bazelUniversalFlags: BazelFlags,
-       localizedMessageLogger: LocalizedMessageLogger) {
+       localizedMessageLogger: LocalizedMessageLogger, bundle: Bundle) {
     self.bazelURL = bazelURL
     self.workspaceRootURL = workspaceRootURL
     self.bazelUniversalFlags = bazelUniversalFlags
     self.localizedMessageLogger = localizedMessageLogger
+    self.bundle = bundle
 
     semaphore = DispatchSemaphore(value: 0)
     fetchWorkspaceInfo()
@@ -111,7 +113,7 @@ public class BazelWorkspacePathInfoFetcher {
 
         let stderr = NSString(data: completionInfo.stderr, encoding: String.Encoding.utf8.rawValue)
         let debugInfoFormatString = NSLocalizedString("DebugInfoForBazelCommand",
-                                                      bundle: Bundle(for: type(of: self)),
+                                                      bundle: self.bundle,
                                                       comment: "Provides general information about a Bazel failure; a more detailed error may be reported elsewhere. The Bazel command is %1$@, exit code is %2$d, stderr %3$@.")
         let debugInfo = String(format: debugInfoFormatString,
                                completionInfo.commandlineString,

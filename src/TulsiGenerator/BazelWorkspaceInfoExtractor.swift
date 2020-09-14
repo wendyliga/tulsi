@@ -50,19 +50,20 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
 
   // Cache of all RuleEntry instances loaded for the associated project.
   private var ruleEntryCache = RuleEntryMap()
+  private let bundle: Bundle
 
-  public init(bazelURL: URL, workspaceRootURL: URL, localizedMessageLogger: LocalizedMessageLogger) {
+  public init(bazelURL: URL, workspaceRootURL: URL, localizedMessageLogger: LocalizedMessageLogger, bundle: Bundle) {
+    self.bundle = bundle
     let universalFlags: BazelFlags
     // Install to ~/Library/Application Support when not running inside a test.
-    if let applicationSupport = ApplicationSupport() {
-      let tulsiVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "UNKNOWN"
+    if let applicationSupport = ApplicationSupport(bundle: bundle) {
+      let tulsiVersion = bundle.infoDictionary?["CFBundleVersion"] as? String ?? "UNKNOWN"
       let aspectPath = try! applicationSupport.copyTulsiAspectFiles(tulsiVersion: tulsiVersion)
       universalFlags = BazelFlags(
         // TODO(tulsi-team): See if we can avoid using --override_repository.
         build: ["--override_repository=tulsi=\(aspectPath)", "--config=debug"]
       )
     } else {  // Running inside a test, just refer to the files directly from TulsiGenerator.
-      let bundle = Bundle(for: type(of: self))
       let bazelWorkspace =
         bundle.url(forResource: "WORKSPACE", withExtension: nil)!.deletingLastPathComponent()
       universalFlags = BazelFlags(build: ["--override_repository=tulsi=\(bazelWorkspace.path)"])
@@ -72,7 +73,8 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
     workspacePathInfoFetcher = BazelWorkspacePathInfoFetcher(bazelURL: bazelURL,
                                                              workspaceRootURL: workspaceRootURL,
                                                              bazelUniversalFlags: universalFlags,
-                                                             localizedMessageLogger: localizedMessageLogger)
+                                                             localizedMessageLogger: localizedMessageLogger,
+                                                             bundle: bundle)
 
     let executionRootURL =  URL(fileURLWithPath: workspacePathInfoFetcher.getExecutionRoot(),
                                 isDirectory: false)
@@ -80,11 +82,13 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
                                                workspaceRootURL: workspaceRootURL,
                                                executionRootURL: executionRootURL,
                                                bazelSettingsProvider: bazelSettingsProvider,
-                                               localizedMessageLogger: localizedMessageLogger)
+                                               localizedMessageLogger: localizedMessageLogger,
+                                               bundle: bundle)
     queryExtractor = BazelQueryInfoExtractor(bazelURL: bazelURL,
                                              workspaceRootURL: workspaceRootURL,
                                              bazelUniversalFlags: universalFlags,
-                                             localizedMessageLogger: localizedMessageLogger)
+                                             localizedMessageLogger: localizedMessageLogger,
+                                             bundle: bundle)
     self.workspaceRootURL = workspaceRootURL
   }
 
@@ -108,7 +112,7 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
     let missingLabels = labels.filter(isLabelMissing)
     if missingLabels.isEmpty { return ruleEntryCache }
 
-    let commandLineSplitter = CommandLineSplitter()
+    let commandLineSplitter = CommandLineSplitter(bundle: bundle)
     func splitOptionString(_ options: String?) -> [String] {
       guard let options = options else { return [] }
       return commandLineSplitter.splitCommandLine(options) ?? []

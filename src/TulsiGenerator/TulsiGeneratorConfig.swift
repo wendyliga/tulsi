@@ -63,6 +63,8 @@ public class TulsiGeneratorConfig {
   /// URL to the Bazel binary.
   private let bazelURLValue: TulsiParameter<URL>
 
+  private let bundle: Bundle
+
   /// URL to the Bazel binary, computed from bazelURLValue.
   public var bazelURL: URL {
     return bazelURLValue.value
@@ -96,7 +98,7 @@ public class TulsiGeneratorConfig {
     return nil
   }
 
-  public static func load(_ inputFile: URL, bazelURL: URL? = nil) throws -> TulsiGeneratorConfig {
+  public static func load(_ inputFile: URL, bazelURL: URL? = nil, bundle: Bundle) throws -> TulsiGeneratorConfig {
     let fileManager = FileManager.default
     guard let data = fileManager.contents(atPath: inputFile.path) else {
       throw ConfigError.badInputFilePath
@@ -117,7 +119,8 @@ public class TulsiGeneratorConfig {
 
     return try TulsiGeneratorConfig(data: data,
                                     additionalOptionData: additionalOptionData,
-                                    bazelURL: bazelURL)
+                                    bazelURL: bazelURL,
+                                    bundle: bundle)
   }
 
   public init(projectName: String,
@@ -125,13 +128,15 @@ public class TulsiGeneratorConfig {
               pathFilters: Set<String>,
               additionalFilePaths: [String]?,
               options: TulsiOptionSet,
-              bazelURL: TulsiParameter<URL>) {
+              bazelURL: TulsiParameter<URL>,
+              bundle: Bundle) {
     self.projectName = projectName
     self.buildTargetLabels = buildTargetLabels
     self.pathFilters = pathFilters
     self.additionalFilePaths = additionalFilePaths
     self.options = options
     self.bazelURLValue = bazelURL
+    self.bundle = bundle
   }
 
   public convenience init(projectName: String,
@@ -139,18 +144,21 @@ public class TulsiGeneratorConfig {
                           pathFilters: Set<String>,
                           additionalFilePaths: [String]?,
                           options: TulsiOptionSet,
-                          bazelURL: TulsiParameter<URL>) {
+                          bazelURL: TulsiParameter<URL>,
+                          bundle: Bundle) {
     self.init(projectName: projectName,
               buildTargetLabels: buildTargets.map({ $0.label }),
               pathFilters: pathFilters,
               additionalFilePaths: additionalFilePaths,
               options: options,
-              bazelURL: bazelURL)
+              bazelURL: bazelURL,
+              bundle: bundle)
   }
 
   public convenience init(data: Data,
                           additionalOptionData: Data? = nil,
-                          bazelURL: URL? = nil) throws {
+                          bazelURL: URL? = nil,
+                          bundle: Bundle) throws {
     func extractJSONDict(_ data: Data, errorBuilder: (String) -> ConfigError) throws -> [String: AnyObject] {
       do {
         guard let jsonDict = try JSONSerialization.jsonObject(with: data,
@@ -202,7 +210,7 @@ public class TulsiGeneratorConfig {
         optionsDict[key] = value
       }
     }
-    let options = TulsiOptionSet(fromDictionary: optionsDict)
+    let options = TulsiOptionSet(fromDictionary: optionsDict, bundle: bundle)
 
     guard let bazelURL = TulsiGeneratorConfig.resolveBazelURL(bazelURL, options: options) else {
       throw ConfigError.deserializationFailed("Unable to find Bazel Path")
@@ -213,7 +221,8 @@ public class TulsiGeneratorConfig {
               pathFilters: pathFilters,
               additionalFilePaths: additionalFilePaths,
               options: options,
-              bazelURL: bazelURL)
+              bazelURL: bazelURL,
+              bundle: bundle)
   }
 
   public func save() throws -> NSData {
@@ -261,7 +270,8 @@ public class TulsiGeneratorConfig {
                                 pathFilters: pathFilters,
                                 additionalFilePaths: additionalFilePaths,
                                 options: resolvedOptions,
-                                bazelURL: newBazelURL)
+                                bazelURL: newBazelURL,
+                                bundle: bundle)
   }
 
   public func configByAppendingPathFilters(_ additionalPathFilters: Set<String>) -> TulsiGeneratorConfig {
@@ -271,6 +281,7 @@ public class TulsiGeneratorConfig {
                                 pathFilters: newPathFilters,
                                 additionalFilePaths: additionalFilePaths,
                                 options: options,
-                                bazelURL: bazelURLValue)
+                                bazelURL: bazelURLValue,
+                                bundle: bundle)
   }
 }

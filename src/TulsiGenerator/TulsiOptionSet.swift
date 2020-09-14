@@ -155,14 +155,16 @@ public class TulsiOptionSet: Equatable {
     return dict[TulsiOptionSet.PersistenceKey] as? PersistenceType
   }
 
-  public init(withInheritanceEnabled inherit: Bool = false) {
-    let bundle = Bundle(for: type(of: self))
+  private let bundle: Bundle
+
+  public init(withInheritanceEnabled inherit: Bool = false, bundle: Bundle) {
+    self.bundle = bundle
     populateOptionsWithBundle(bundle, withInheritAsDefault: inherit)
     populateOptionGroupInfoWithBundle(bundle)
   }
 
-  public convenience init(fromDictionary dict: [String: Any]) {
-    self.init()
+  public convenience init(fromDictionary dict: [String: Any], bundle: Bundle) {
+    self.init(bundle: bundle)
 
     guard let persistedOptions = dict as? PersistenceType else {
       assertionFailure("Options dictionary is not of the expected type")
@@ -188,7 +190,7 @@ public class TulsiOptionSet: Equatable {
       resolvedOptions[key] = TulsiOption(resolvingValuesFrom: opt, byInheritingFrom: parentOption)
     }
 
-    let resolvedSet = TulsiOptionSet()
+    let resolvedSet = TulsiOptionSet(bundle: bundle)
     resolvedSet.options = resolvedOptions
     return resolvedSet
   }

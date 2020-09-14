@@ -20,9 +20,8 @@ import Foundation
 class CommandLineSplitter {
   let scriptPath: String
 
-  init() {
-    scriptPath = Bundle(for: type(of: self)).path(forResource: "command_line_splitter",
-                                                                      ofType: "sh")!
+  init(bundle: Bundle) {
+    scriptPath = bundle.path(forResource: "command_line_splitter", ofType: "sh")!
   }
 
   /// WARNING: This method utilizes a shell instance to evaluate the commandline and may have side

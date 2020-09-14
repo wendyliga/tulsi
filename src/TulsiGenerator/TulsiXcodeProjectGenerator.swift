@@ -32,18 +32,20 @@ public final class TulsiXcodeProjectGenerator {
 
   public convenience init (workspaceRootURL: URL,
                            config: TulsiGeneratorConfig,
-                           tulsiVersion: String) {
+                           tulsiVersion: String,
+                           bundle: Bundle) {
     self.init(workspaceRootURL: workspaceRootURL,
               config: config,
               extractorBazelURL: config.bazelURL as URL,
-              tulsiVersion: tulsiVersion)
+              tulsiVersion: tulsiVersion, 
+              bundle: bundle)
   }
 
   init(workspaceRootURL: URL,
        config: TulsiGeneratorConfig,
        extractorBazelURL: URL,
-       tulsiVersion: String) {
-    let bundle = Bundle(for: type(of: self))
+       tulsiVersion: String, 
+       bundle: Bundle) {
     let localizedMessageLogger = LocalizedMessageLogger(bundle: bundle)
 
     let resourceURLs = XcodeProjectGenerator.ResourceSourcePathURLs(
@@ -71,14 +73,16 @@ public final class TulsiXcodeProjectGenerator {
     // BUILD files (or add new files to glob's) and regenerate without restarting Tulsi.
     let extractor = BazelWorkspaceInfoExtractor(bazelURL: extractorBazelURL,
                                                 workspaceRootURL: workspaceRootURL,
-                                                localizedMessageLogger: localizedMessageLogger)
+                                                localizedMessageLogger: localizedMessageLogger, 
+                                                bundle: bundle)
 
     xcodeProjectGenerator = XcodeProjectGenerator(workspaceRootURL: workspaceRootURL,
                                                   config: config,
                                                   localizedMessageLogger: localizedMessageLogger,
                                                   workspaceInfoExtractor: extractor,
                                                   resourceURLs: resourceURLs,
-                                                  tulsiVersion: tulsiVersion)
+                                                  tulsiVersion: tulsiVersion,
+                                                  bundle: bundle)
   }
 
   /// Generates an Xcode project bundle in the given folder.

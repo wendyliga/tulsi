@@ -38,14 +38,15 @@ public final class TulsiProjectInfoExtractor {
   }
 
   public init(bazelURL: URL,
-              project: TulsiProject) {
+              project: TulsiProject,
+              bundle: Bundle) {
     self.project = project
-    let bundle = Bundle(for: type(of: self))
     localizedMessageLogger = LocalizedMessageLogger(bundle: bundle)
 
     workspaceInfoExtractor = BazelWorkspaceInfoExtractor(bazelURL: bazelURL,
                                                          workspaceRootURL: project.workspaceRootURL,
-                                                         localizedMessageLogger: localizedMessageLogger)
+                                                         localizedMessageLogger: localizedMessageLogger, 
+                                                         bundle: bundle)
   }
 
   public func extractTargetRules() -> [RuleInfo] {

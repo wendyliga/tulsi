@@ -76,30 +76,34 @@ public final class TulsiProject {
     return "\(NSUserName()).tulsiconf-user"
   }
 
-  public static func load(_ projectBundleURL: URL) throws -> TulsiProject {
+  public static func load(_ projectBundleURL: URL, bundle: Bundle) throws -> TulsiProject {
     let fileManager = FileManager.default
     let projectFileURL = projectBundleURL.appendingPathComponent(TulsiProject.ProjectFilename)
     guard let data = fileManager.contents(atPath: projectFileURL.path) else {
       throw ProjectError.badInputFilePath
     }
-    return try TulsiProject(data: data, projectBundleURL: projectBundleURL)
+    return try TulsiProject(data: data, projectBundleURL: projectBundleURL, bundle: bundle)
   }
+
+  private let bundle: Bundle
 
   public init(projectName: String,
               projectBundleURL: URL,
               workspaceRootURL: URL,
               bazelPackages: [String] = [],
-              options: TulsiOptionSet? = nil) {
+              options: TulsiOptionSet? = nil,
+              bundle: Bundle) {
     self.projectName = projectName
     self.projectBundleURL = projectBundleURL
     self.workspaceRootURL = workspaceRootURL
     self.bazelPackages = bazelPackages
+    self.bundle = bundle
 
     if let options = options {
       self.options = options
       hasExplicitOptions = true
     } else {
-      self.options = TulsiOptionSet()
+      self.options = TulsiOptionSet(bundle: bundle)
       hasExplicitOptions = false
     }
     if let bazelPath = self.options[.BazelPath].projectValue {
@@ -113,7 +117,8 @@ public final class TulsiProject {
 
   public convenience init(data: Data,
                           projectBundleURL: URL,
-                          additionalOptionData: Data? = nil) throws {
+                          additionalOptionData: Data? = nil,
+                          bundle: Bundle) throws {
     do {
       guard let dict = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions()) as? [String: AnyObject] else {
         throw ProjectError.deserializationFailed("File is not of dictionary type")
@@ -141,7 +146,7 @@ public final class TulsiProject {
           try TulsiProject.updateOptionsDict(&optionsDict,
                                              withAdditionalOptionData: additionalOptionData)
         }
-        options = TulsiOptionSet(fromDictionary: optionsDict)
+        options = TulsiOptionSet(fromDictionary: optionsDict, bundle: bundle)
       } else {
         options = nil
       }
@@ -150,7 +155,8 @@ public final class TulsiProject {
                 projectBundleURL: projectBundleURL,
                 workspaceRootURL: workspaceRootURL,
                 bazelPackages: bazelPackages,
-                options: options)
+                options: options,
+                bundle: bundle)
     } catch let e as ProjectError {
       throw e
     } catch let e as NSError {

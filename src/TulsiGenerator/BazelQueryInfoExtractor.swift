@@ -33,17 +33,20 @@ final class BazelQueryInfoExtractor: QueuedLogging {
 
   private let localizedMessageLogger: LocalizedMessageLogger
   private var queuedInfoMessages = [String]()
+  private let bundle: Bundle
 
   private typealias CompletionHandler = (Process, Data, String?, String) -> Void
 
   init(bazelURL: URL,
        workspaceRootURL: URL,
        bazelUniversalFlags: BazelFlags,
-       localizedMessageLogger: LocalizedMessageLogger) {
+       localizedMessageLogger: LocalizedMessageLogger,
+       bundle: Bundle) {
     self.bazelURL = bazelURL
     self.workspaceRootURL = workspaceRootURL
     self.bazelUniversalFlags = bazelUniversalFlags
     self.localizedMessageLogger = localizedMessageLogger
+    self.bundle = bundle
   }
 
   func extractTargetRulesFromPackages(_ packages: [String]) -> [RuleInfo] {
@@ -175,9 +178,9 @@ final class BazelQueryInfoExtractor: QueuedLogging {
                                                    arguments: arguments,
                                                    messageLogger: localizedMessageLogger,
                                                    loggingIdentifier: loggingIdentifier) {
-      completionInfo in
+      [unowned self] completionInfo in
         let debugInfoFormatString = NSLocalizedString("DebugInfoForBazelCommand",
-                                                      bundle: Bundle(for: type(of: self)),
+                                                      bundle: self.bundle,
                                                       comment: "Provides general information about a Bazel failure; a more detailed error may be reported elsewhere. The Bazel command is %1$@, exit code is %2$d, stderr %3$@.")
         let stderr = NSString(data: completionInfo.stderr, encoding: String.Encoding.utf8.rawValue)
         let debugInfo = String(format: debugInfoFormatString,

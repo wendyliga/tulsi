@@ -93,6 +93,7 @@ final class XcodeProjectGenerator {
   private let workspaceInfoExtractor: BazelWorkspaceInfoExtractorProtocol
   private let resourceURLs: ResourceSourcePathURLs
   private let tulsiVersion: String
+  private let bundle: Bundle
 
   private let pbxTargetGeneratorType: PBXTargetGeneratorProtocol.Type
 
@@ -130,7 +131,8 @@ final class XcodeProjectGenerator {
        resourceURLs: ResourceSourcePathURLs,
        tulsiVersion: String,
        fileManager: FileManager = FileManager.default,
-       pbxTargetGeneratorType: PBXTargetGeneratorProtocol.Type = PBXTargetGenerator.self) {
+       pbxTargetGeneratorType: PBXTargetGeneratorProtocol.Type = PBXTargetGenerator.self,
+       bundle: Bundle) {
     self.workspaceRootURL = workspaceRootURL
     self.config = config
     self.localizedMessageLogger = localizedMessageLogger
@@ -139,6 +141,7 @@ final class XcodeProjectGenerator {
     self.tulsiVersion = tulsiVersion
     self.fileManager = fileManager
     self.pbxTargetGeneratorType = pbxTargetGeneratorType
+    self.bundle = bundle
   }
 
   /// Determines the "best" common SDKROOT for a sequence of RuleEntries.
@@ -981,8 +984,6 @@ final class XcodeProjectGenerator {
                                                                  features: features,
                                                                  buildRuleEntries: buildRuleEntries)
 
-    let bundle = Bundle(for: type(of: self))
-
     guard let templateURL = bundle.url(forResource: XcodeProjectGenerator.SettingsScript,
                                        withExtension: "template") else {
       localizedMessageLogger.error("GeneratingBazelBuildSettingsFailed",
@@ -1038,7 +1039,6 @@ final class XcodeProjectGenerator {
     }
 
     // Find bazel_cache_reader in Tulsi.app's Utilities folder.
-    let bundle = Bundle(for: type(of: self))
     let symbolCacheSourceURL = bundle.url(forResource: XcodeProjectGenerator.ShellCommandsUtil,
                                           withExtension: "")!
 
@@ -1120,7 +1120,6 @@ final class XcodeProjectGenerator {
   }
 
   private func executePythonProcess(_ scriptFileName: String, onError: @escaping (Int32, String) -> Void) {
-    let bundle = Bundle(for: type(of: self))
     let cleanSymbolsSourceURL = bundle.url(forResource: scriptFileName, withExtension: "py")!
 
     let process = ProcessRunner.createProcess(cleanSymbolsSourceURL.path,
