@@ -51,7 +51,7 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
   // Cache of all RuleEntry instances loaded for the associated project.
   private var ruleEntryCache = RuleEntryMap()
 
-  public init(bazelURL: URL, workspaceRootURL: URL, localizedMessageLogger: LocalizedMessageLogger, bundle: Bundle = .main) {
+  public init(bazelURL: URL, workspaceRootURL: URL, localizedMessageLogger: LocalizedMessageLogger, bundle: Bundle) {
     let universalFlags: BazelFlags
     // Install to ~/Library/Application Support when not running inside a test.
     if let applicationSupport = ApplicationSupport() {
@@ -62,7 +62,6 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
         build: ["--override_repository=tulsi=\(aspectPath)", "--config=debug"]
       )
     } else {  // Running inside a test, just refer to the files directly from TulsiGenerator.
-      let bundle = Bundle(for: type(of: self))
       let bazelWorkspace =
         bundle.url(forResource: "WORKSPACE", withExtension: nil)!.deletingLastPathComponent()
       universalFlags = BazelFlags(build: ["--override_repository=tulsi=\(bazelWorkspace.path)"])

@@ -35,9 +35,10 @@ public final class TulsiProcessRunner {
                             environment: [String: String]? = nil,
                             messageLogger: LocalizedMessageLogger? = nil,
                             loggingIdentifier: String? = nil,
-                            terminationHandler: @escaping CompletionHandler) -> Process {
+                            terminationHandler: @escaping CompletionHandler,
+                            bundle: Bundle = .main) -> Process {
 
-    var env = defaultEnvironment
+    var env = defaultEnvironment(bundle: bundle)
     if let environment = environment {
       for (key, value) in environment {
         env[key] = value
