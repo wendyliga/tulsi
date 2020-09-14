@@ -20,13 +20,13 @@ public final class TulsiProcessRunner {
 
   public typealias CompletionHandler = (ProcessRunner.CompletionInfo) -> Void
 
-  private static var defaultEnvironment: [String: String] = {
+  private static func defaultEnvironment(bundle: Bundle = .main) -> [String: String] {
     var environment = ProcessInfo.processInfo.environment
-    if let cfBundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+    if let cfBundleVersion = bundle.infoDictionary?["CFBundleVersion"] as? String {
       environment["TULSI_VERSION"] = cfBundleVersion
     }
     return environment
-  }()
+  }
 
   /// Prepares a Process using the given launch binary with the given arguments that will collect
   /// output and passing it to a terminationHandler.

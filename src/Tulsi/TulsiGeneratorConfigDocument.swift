@@ -250,10 +250,11 @@ final class TulsiGeneratorConfigDocument: NSDocument,
                                            withGeneratorConfig config: TulsiGeneratorConfig,
                                            workspaceRootURL: URL,
                                            messageLog: MessageLogProtocol?,
-                                           projectInfoExtractor: TulsiProjectInfoExtractor? = nil) -> GenerationResult {
+                                           projectInfoExtractor: TulsiProjectInfoExtractor? = nil,
+                                           bundle: Bundle = .main) -> GenerationResult {
 
     let tulsiVersion: String
-    if let cfBundleVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+    if let cfBundleVersion = bundle.infoDictionary?["CFBundleVersion"] as? String {
       tulsiVersion = cfBundleVersion
     } else {
       tulsiVersion = ""

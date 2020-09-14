@@ -51,11 +51,11 @@ public final class BazelWorkspaceInfoExtractor: BazelWorkspaceInfoExtractorProto
   // Cache of all RuleEntry instances loaded for the associated project.
   private var ruleEntryCache = RuleEntryMap()
 
-  public init(bazelURL: URL, workspaceRootURL: URL, localizedMessageLogger: LocalizedMessageLogger) {
+  public init(bazelURL: URL, workspaceRootURL: URL, localizedMessageLogger: LocalizedMessageLogger, bundle: Bundle = .main) {
     let universalFlags: BazelFlags
     // Install to ~/Library/Application Support when not running inside a test.
     if let applicationSupport = ApplicationSupport() {
-      let tulsiVersion = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "UNKNOWN"
+      let tulsiVersion = bundle.infoDictionary?["CFBundleVersion"] as? String ?? "UNKNOWN"
       let aspectPath = try! applicationSupport.copyTulsiAspectFiles(tulsiVersion: tulsiVersion)
       universalFlags = BazelFlags(
         // TODO(tulsi-team): See if we can avoid using --override_repository.
